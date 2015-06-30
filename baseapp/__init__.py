@@ -5,7 +5,7 @@ import logging
 from flask import Flask, request, render_template
 from flask_wtf.csrf import CsrfProtect
 
-from .controllers import pages, user
+from .controllers import logger, user
 from .extensions import all_extensions, db
 
 
@@ -31,10 +31,20 @@ def create_app(config_filename):
             print("Creating {} at {}".format(app.config['DB_NAME'],
                                              app.config['APP_DIR']))
             db.create_all()
+            from baseapp.controllers.user.models import User
+            user = User(username='admin',
+                        email='gaulinmp@gmail.com',
+                        password='admin',
+                        active=True,
+                        admin=True)
+            user.save()
+            from baseapp.controllers.logger.models import LogProject
+            p = LogProject(id=0, name="Default")
+            p.save()
 
     # Register blueprints
-    app.register_blueprint(pages.blueprint)
-    pages.blueprint.extra_init(app)
+    app.register_blueprint(logger.views.blueprint)
+    logger.views.blueprint.extra_init(app)
     app.register_blueprint(user.views.blueprint)
 
     app.logger.setLevel(logging.WARNING)

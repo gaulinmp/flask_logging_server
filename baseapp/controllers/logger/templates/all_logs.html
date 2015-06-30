@@ -1,0 +1,18 @@
+{% extends 'layouts/skeleton.html' %}
+{% block title %}View Logs{% endblock %}
+
+{% block content %}
+
+  {% for l in logs %}
+  <div class="entry">
+
+    <div class='project'>{{ l.project.name }}</div>
+    <div class='level'>{{ l.level_name }}</div>
+    <div class='timestamp'>{{ l.timestamp }}</div>
+    <div class='submitter'>{{ l.submitter }}</div>
+    <div class='message'>{{ l.message }}</div>
+
+  </div>
+  {% endfor %}
+
+{% endblock content %}
