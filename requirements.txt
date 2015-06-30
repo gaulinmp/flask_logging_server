@@ -3,3 +3,4 @@ Jinja2>=2.7.0
 pycrypto>=2.6.0
 Flask-WTF>=2.0.0
 Flask-Bcrypt>=0.6.0
+Flask-SQLAlchemy>=2.0.0
