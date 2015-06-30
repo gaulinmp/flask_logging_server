@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import timedelta
 
 from flask import request, url_for, redirect, session, current_app
@@ -45,16 +46,21 @@ class LogEntryForm(RedirectForm):
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
+        self.update_choices()
 
-    def validate(self):
-        initial_validation = super(LogEntryForm, self).validate()
-        if not initial_validation:
-            return False
+    def update_choices(self):
+        self.project_id.choices = [(p.id, p.name)
+                                    for p in LogProject.query.all()]
 
+    def pre_validate(self):
+        """Run before validating"""
         project = LogProject.query.filter_by(id=self.project_id.data).first()
         if not project:
             self.project_id.data = 0
 
         self.level.data = get_log_level(self.level.data)
+        return self
 
-        return True
+    def validate(self):
+        self.pre_validate()
+        return super(LogEntryForm, self).validate()

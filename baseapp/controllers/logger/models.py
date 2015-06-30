@@ -27,10 +27,10 @@ LEVELS = {'critical':50, 'error':40, 'warning':30, 'info':20, 'debug':10}
 LEVELS_INVERSE = {v:k.upper() for k,v in LEVELS.items()}  # add 10:debug
 
 def get_log_level(int_or_string):
-    level = logging.INFO
+    level = logging.DEBUG
     try:  # Make sure 'level' is int
         level = int(int_or_string)
-    except ValueError:  # value error means text (or other)
+    except TypeError:  # value error means text (or other)
         txt = str(int_or_string).lower().strip()
         level = LEVELS.get(txt, level)
     return level
@@ -39,14 +39,14 @@ def get_str_level_from_int(int_level):
     level = get_log_level(int_level)  # Ensure int
     level = max(logging.DEBUG, min(logging.CRITICAL, level)) # coerce to 10..50
     level = level // 10 * 10  # Coerce to multiples of 10
-    return LEVELS_INVERSE.get(level, 'INFO')  # default to INFO
+    return LEVELS_INVERSE.get(level, 'DEBUG')  # default to DEBUG
 
 
 class LogProject(SurrogatePK, Model):
     __tablename__ = 'log_projects'
     name = Column(db.String(80), nullable=False, default='default')
 
-    def get_logs(self, min_level=logging.INFO):
+    def get_logs(self, min_level=logging.DEBUG):
         return LogEntry.search(project_id = self.id, level=min_level)
 
     def __repr__(self):
@@ -72,7 +72,7 @@ class LogEntry(SurrogatePK, Model):
         try:
             level = get_log_level(kwargs['level'])
         except KeyError:
-            level = logging.INFO
+            level = logging.DEBUG
         kwargs['level'] = level
 
         if 'project_id' in kwargs:
@@ -80,7 +80,7 @@ class LogEntry(SurrogatePK, Model):
             if int(kwargs['project_id']) not in pids:
                 kwargs['project_id'] = 0
         kwargs['project_id'] = int(kwargs['project_id'])
-        
+
         db.Model.__init__(self, **kwargs)
 
     @hybrid_property
@@ -92,16 +92,16 @@ class LogEntry(SurrogatePK, Model):
                                       **self.__dict__)
 
     @staticmethod
-    def search(project_id=None, level=logging.INFO):
+    def search(project_id=None, level=logging.DEBUG):
         """
         Searches `log_entry` database, returns log entries matching project_id
         and having at least `level` logging level.
         Leave project_id=None or project_id < 0 to get all.
         """
-        q = LogEntry.query.filter(LogEntry.level>=get_log_level(level))
+        q = LogEntry.query.filter(LogEntry.level >= get_log_level(level))
 
         if project_id is not None and project_id >= 0:
-            q = q.filter(LogEntry.project_id==project_id)
+            q = q.filter(LogEntry.project_id == project_id)
 
         return q
 

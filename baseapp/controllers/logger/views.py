@@ -3,8 +3,8 @@ import json
 import logging
 
 from flask import (Blueprint, render_template, request, flash,
-                   session, redirect, url_for)
-from flask.ext.login import login_user, login_required, logout_user, current_user
+                   session, redirect, url_for, current_app)
+from flask.ext.login import login_required, current_user
 
 from .forms import LogEntryForm, ProjectCreateForm
 from .models import LogEntry, LogProject
@@ -37,8 +37,8 @@ def home():
 @login_required
 def submit_log():
     form = LogEntryForm(request.form)
-    ps = LogProject.query.order_by('id')
-    form.project_id.choices = [(p.id, p.name) for p in ps]
+    #ps = LogProject.query.order_by('id')
+    #form.project_id.choices = [(p.id, p.name) for p in ps]
     # POST means submitting a log
     if request.method == 'POST':
         if form.validate_on_submit(): # create and redirect to home
@@ -68,28 +68,26 @@ def submit_project():
     # GET means render the form
     return render_template("form.html", form=form, title="Submit Project")
 
-# @blueprint.route("/test", methods=["GET"])
-# def create_things():
-#     # for i in range(59):
-#     #     l = LogEntry.create(submitter='man {}'.format(i),
-#     #                         email_to='a{}@b.com'.format(i),
-#     #                         project_id=i%2,
-#     #                         message='Message {}'.format(i),
-#     #                         level=i)
-#
-#     try:
-#         pid = int(request.args.get('project', -1))
-#     except ValueError:
-#         pid = -1
-#     logs = LogEntry.search(project_id=pid, level=logging.DEBUG
-#                           ).order_by('timestamp desc')
-#     projs = LogProject.query.all()
-#     return "{}\n{}".format(json.dumps([str(x) for x in logs]),
-#                            json.dumps([str(x) for x in projs]))
+@blueprint.route("/api_upload", methods=["GET"])
+def api_create():
+    form = LogEntryForm(request.args, csrf_enabled=False)
+    #form.project_id.data = request.args.get('project_id', -1)
+    if not form.validate():
+        print(form.errors)
+        return "{'success':false, 'message':'Invalid supplied data'}", 401
+    upkey = current_app.config['UPLOAD_KEY']
+    print(upkey)
+    if len(upkey) < 1:
+        return "{'success':false, 'message':'Auth config missing.'}", 500
+    if upkey != request.args.get('key', ''):
+        return "{'success':false, 'message':'Not authenticated.'}", 403
+    l = LogEntry.create(submitter=form.submitter.data,
+                        email_to=form.email_to.data,
+                        project_id=form.project_id.data,
+                        message=form.message.data,
+                        level=form.level.data)
+    return "{'success':true}", 200
 
-@login_manager.unauthorized_handler
-def unauthorized():
-    return redirect(url_for('user.login'))
 
 ################################################################################
 ####           Add to App Context Manager                                   ####

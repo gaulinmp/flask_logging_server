@@ -17,7 +17,7 @@ def create_app(config_filename):
 
     # Register extensions
     for ext in all_extensions:
-        print(ext)
+        #print(ext)
         ext.init_app(app)
     # Add DB resource to app object for use later.
     app.db = db
