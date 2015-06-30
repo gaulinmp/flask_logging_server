@@ -4,7 +4,7 @@ import logging
 
 from flask import (Blueprint, render_template, request, flash,
                    session, redirect, url_for)
-from flask.ext.login import login_user, login_required, logout_user #, current_user
+from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from .forms import LogEntryForm, ProjectCreateForm
 from .models import LogEntry, LogProject
@@ -21,6 +21,7 @@ blueprint = Blueprint('baseapp', __name__,
 ################################################################################
 
 @blueprint.route("/", methods=["GET"])
+@login_required
 def home():
     try:
         pid = int(request.args.get('project', -1))
@@ -33,6 +34,7 @@ def home():
     return render_template("all_logs.html", logs=logs, projects=projs)
 
 @blueprint.route("/newlog", methods=["GET", "POST"])
+@login_required
 def submit_log():
     form = LogEntryForm(request.form)
     ps = LogProject.query.order_by('id')
@@ -53,6 +55,7 @@ def submit_log():
     return render_template("form.html", form=form, title="Submit Log")
 
 @blueprint.route("/newproj", methods=["GET", "POST"])
+@login_required
 def submit_project():
     form = ProjectCreateForm(request.form)
     # POST means submitting a log
@@ -65,25 +68,28 @@ def submit_project():
     # GET means render the form
     return render_template("form.html", form=form, title="Submit Project")
 
-@blueprint.route("/test", methods=["GET"])
-def create_things():
-    # for i in range(59):
-    #     l = LogEntry.create(submitter='man {}'.format(i),
-    #                         email_to='a{}@b.com'.format(i),
-    #                         project_id=i%2,
-    #                         message='Message {}'.format(i),
-    #                         level=i)
+# @blueprint.route("/test", methods=["GET"])
+# def create_things():
+#     # for i in range(59):
+#     #     l = LogEntry.create(submitter='man {}'.format(i),
+#     #                         email_to='a{}@b.com'.format(i),
+#     #                         project_id=i%2,
+#     #                         message='Message {}'.format(i),
+#     #                         level=i)
+#
+#     try:
+#         pid = int(request.args.get('project', -1))
+#     except ValueError:
+#         pid = -1
+#     logs = LogEntry.search(project_id=pid, level=logging.DEBUG
+#                           ).order_by('timestamp desc')
+#     projs = LogProject.query.all()
+#     return "{}\n{}".format(json.dumps([str(x) for x in logs]),
+#                            json.dumps([str(x) for x in projs]))
 
-    try:
-        pid = int(request.args.get('project', -1))
-    except ValueError:
-        pid = -1
-    logs = LogEntry.search(project_id=pid, level=logging.DEBUG
-                          ).order_by('timestamp desc')
-    projs = LogProject.query.all()
-    return "{}\n{}".format(json.dumps([str(x) for x in logs]),
-                           json.dumps([str(x) for x in projs]))
-
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('user.login'))
 
 ################################################################################
 ####           Add to App Context Manager                                   ####
