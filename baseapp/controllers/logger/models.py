@@ -75,12 +75,12 @@ class LogEntry(SurrogatePK, Model):
             level = logging.INFO
         kwargs['level'] = level
 
-        if ('project_id' in kwargs and
-             LogProject.query.filter(LogProject.id==int(kwargs['project_id'])
-                                    ).first()):
-            print("Found project {}".format(kwargs['project_id']))
-        else:
-            kwargs['project_id'] = 0
+        if 'project_id' in kwargs:
+            pids = set([x.id for x in LogProject.query.all()])
+            if int(kwargs['project_id']) not in pids:
+                kwargs['project_id'] = 0
+        kwargs['project_id'] = int(kwargs['project_id'])
+        
         db.Model.__init__(self, **kwargs)
 
     @hybrid_property

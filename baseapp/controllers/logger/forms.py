@@ -44,19 +44,11 @@ class LogEntryForm(RedirectForm):
                         choices=sorted(LEVELS_INVERSE.items()))
 
     def __init__(self, *args, **kwargs):
-        print(args)
-        print(kwargs)
-        print("That was the form")
         Form.__init__(self, *args, **kwargs)
 
     def validate(self):
         initial_validation = super(LogEntryForm, self).validate()
         if not initial_validation:
-            for k,v in self.__dict__.items():
-                try: print(k, v.data)
-                except: pass
-            print(self.errors)
-            print("Didn't pass muster.")
             return False
 
         project = LogProject.query.filter_by(id=self.project_id.data).first()
