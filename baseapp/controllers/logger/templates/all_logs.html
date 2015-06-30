@@ -1,18 +1,92 @@
 {% extends 'layouts/skeleton.html' %}
 {% block title %}View Logs{% endblock %}
+{% block head %}
+<script type="text/javascript">
+function mkarg(key, value) {
+      key = escape(key); value = escape(value);
+
+      var kvp = document.location.search.substr(1).split('&');
+      if (kvp == '') {
+          document.location.search = '?' + key + '=' + value;
+      }
+      else {
+
+          var i = kvp.length; var x; while (i--) {
+              x = kvp[i].split('=');
+
+              if (x[0] == key) {
+                  x[1] = value;
+                  kvp[i] = x.join('=');
+                  break;
+              }
+          }
+
+          if (i < 0) { kvp[kvp.length] = [key, value].join('='); }
+
+          //this will reload the page, it's likely better to store this until finished
+          document.location.search = kvp.join('&');
+      }
+  }
+</script>
+{% endblock head %}
+
+{% block header_links_left %}
+<li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown">Projects <b class="caret"></b></a>
+  <ul class="dropdown-menu">
+  {% for p in projects %}
+    <li><a href="javascript:mkarg('project','{{ p.id }}');">{{ p.name }}</a></li>
+  {% endfor %}
+  </ul>
+</li>
+<li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown">Levels <b class="caret"></b></a>
+  <ul class="dropdown-menu">
+    <li><a href="javascript:mkarg('level','critical');"><span class='text-danger'>Critical</span></a></li>
+    <li><a href="javascript:mkarg('level','error')"><span class='text-warning'>Error</span></a></li>
+    <li><a href="javascript:mkarg('level','warning')"><span class='text-success'>Warning</span></a></li>
+    <li><a href="javascript:mkarg('level','info')">Info</a></li>
+    <li><a href="javascript:mkarg('level','debug')">Debug</a></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown">New <b class="caret"></b></a>
+  <ul class="dropdown-menu">
+    <li><a href="{{ url_for('baseapp.submit_log') }}">Log</a></li>
+    <li><a href="{{ url_for('baseapp.submit_project') }}">Project</a></li>
+  </ul>
+</li>
+{% endblock header_links_left %}
+
+{% set level_to_class = {'DEBUG': '', 'INFO':'', 'WARNING':'success',
+                         'ERROR': 'warning', 'CRITICAL': 'danger'} %}
+
 
 {% block content %}
-
-  {% for l in logs %}
-  <div class="entry">
-
-    <div class='project'>{{ l.project.name }}</div>
-    <div class='level'>{{ l.level_name }}</div>
-    <div class='timestamp'>{{ l.timestamp }}</div>
-    <div class='submitter'>{{ l.submitter }}</div>
-    <div class='message'>{{ l.message }}</div>
-
-  </div>
-  {% endfor %}
-
+<div class='container'>
+  <table class="log-table table table-condensed table-striped table-hover">
+    <thead>
+      <tr class="entry">
+        <th class='logval project col-md-1'>Project</th>
+        <th class='logval level col-md-1'>Level</th>
+        <th class='logval timestamp col-md-2 col-sm-1 col-xs-1'>Time</th>
+        <th class='logval submitter col-md-1'>From</th>
+        <th class='logval message'>Log</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in logs %}
+      <tr class="entry {{ level_to_class[l.level_name] }}">
+        <td class='logval project'>{{ l.project.name }}</td>
+        <td class='logval level'>{{ l.level_name }}</td>
+        <td class='logval timestamp'>
+          <span class=' hidden-xs'>{{ l.timestamp.strftime('%Y-%m-%d') }}</span>
+          {{ l.timestamp.strftime('%H:%M:%S') }}</td>
+        <td class='logval submitter'>{{ l.submitter }}</td>
+        <td class='logval message'>{{ l.message }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock content %}

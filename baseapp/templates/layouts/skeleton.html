@@ -55,12 +55,11 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             {% if header_links %}
-            {% for name,route in header_links %}
-              <li><a href="{{ url_for(route) }}">{{ name }}</a></li>
-            {% endfor %}
-            {% else %}
-              <li><a href="{{ url_for('baseapp.home') }}">Home</a></li>
+              {% for name,route in header_links %}
+                <li><a href="{{ url_for(route) }}">{{ name }}</a></li>
+              {% endfor %}
             {% endif %}
+            {% block header_links_left %}{% endblock header_links_left %}
           </ul>
           <ul class="nav navbar-nav pull-right">
           {% if current_user %}
@@ -73,6 +72,7 @@
               {% else %}
                 <li><a href="{{ url_for('user.logout') }}">Logout</a></li>
               {% endif %}
+              {% block header_links_dropdown %}{% endblock header_links_dropdown %}
               </ul>
             </li>
           {% endif %}
@@ -95,7 +95,7 @@
         {% endif %}
       {% endwith %}
 
-      {% block content %}{% endblock %}
+      {% block content %}{% endblock content %}
 
     </main>
 
@@ -105,8 +105,8 @@
     <div class="container">
       <br>
       <p>{% if config.DEBUG %}<strong>(DEBUG MODE ON)</strong>{% endif %}
-         {{ config.SITE_AUTHOR | default("") }} &copy; All Rights Reserved.</p>
-      {% block footer %}{% endblock %}
+         {{ config.SITE_AUTHOR | default("") }} &copy; All Rights Reserved.
+      {% block footer %}{% endblock footer %}</p>
     </div>
   </div>
 

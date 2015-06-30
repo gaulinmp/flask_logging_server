@@ -49,6 +49,8 @@ class LogProject(SurrogatePK, Model):
     def get_logs(self, min_level=logging.INFO):
         return LogEntry.search(project_id = self.id, level=min_level)
 
+    def __repr__(self):
+        return "<Project[{}]:'{}'>".format(self.id, self.name)
 
 class LogEntry(SurrogatePK, Model):
     __tablename__ = 'log_entries'
@@ -63,7 +65,8 @@ class LogEntry(SurrogatePK, Model):
     project = relationship("LogProject", backref=backref('logs',
                                                          order_by=timestamp))
 
-    LOG_FORMAT = "{level_name}\t{timestamp:%Y-%m-%d %H:%M:%S}\t{message}"
+    LOG_FORMAT = ("{project_id}\t{level_name}\t"
+                  "{timestamp:%Y-%m-%d %H:%M:%S}\t{message}")
 
     def __init__(self, **kwargs):
         try:
@@ -85,7 +88,6 @@ class LogEntry(SurrogatePK, Model):
         return get_str_level_from_int(self.level)
 
     def __repr__(self):
-        print(self.__dict__)
         return self.LOG_FORMAT.format(level_name=self.level_name, # TODO: fix
                                       **self.__dict__)
 
@@ -94,12 +96,14 @@ class LogEntry(SurrogatePK, Model):
         """
         Searches `log_entry` database, returns log entries matching project_id
         and having at least `level` logging level.
-        Leave project_id=None to get all.
+        Leave project_id=None or project_id < 0 to get all.
         """
-        if project_id is not None:
-            return LogEntry.query.filter(and_(LogEntry.id==project_id,
-                                              LogEntry.level>=level))
-        return LogEntry.query.filter(LogEntry.level>=level)
+        q = LogEntry.query.filter(LogEntry.level>=get_log_level(level))
+
+        if project_id is not None and project_id >= 0:
+            q = q.filter(LogEntry.project_id==project_id)
+
+        return q
 
     @staticmethod
     def create(**kwargs):
