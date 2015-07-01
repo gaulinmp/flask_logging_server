@@ -39,7 +39,7 @@ $ python shell.py
 Screenshot
 -----------------
 
-.. image:: https://raw.githubusercontent.com/gaulinmp/flask_mold/master/home.png
+.. image:: https://raw.githubusercontent.com/gaulinmp/flask_logging_server/master/home.png
    :scale: 25 %
    :alt: Plain bootstrap white theme.
    :align: center
