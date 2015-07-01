@@ -1,22 +1,27 @@
 ================================
-Flask Boilerplate
+Flask Logging Server
 ================================
 
-Empty Flask app with default User login working.
+Flask website for uploading and displaying logging messages from any web-connected computer.
+Uses simple GET and a 'secret key' to upload.
 
 Quick Start
 ------------
-#. Clone the repo, or run code similar to `this gist <https://gist.github.com/gaulinmp/c558a8cc9192eeda316d#file-new_flask_from_mold-sh>`_.
+#) git clone https://github.com/gaulinmp/flask_logging_server.git to your server of choice (I use bluehost)
+   
+   #) Let's say you put it at `$HOME/projects/flask_logging_server` for now.
 
-#. Check out sqlalchemy branch if that's your cup of tea (`git pull source sqlalchemy`)
+#) Put your WSGI run script in a folder somewhere in the ~/public_html folder.
+   
+   #) Let's say you put it at `$HOME/public_html/projects/log` for now.
+   
+   #) You could copy the example_wsgi.py script: `cp example_wsgi.py $HOME/public_html/projects/log`
 
-   #. If using sqlalchemy, run the server once to automatically create the DB.
+#) That's it for the server.
 
-#. Add pages by:
+#) On any computer, send a GET request to the api_upload URI with the correct secret key
 
-   #. copying the controllers.user or pages.py from baseapp, then adding new blueprint to loading.
-
-   #. Adding to pages.py in baseapp.controllers.
+   #) http\:\/\/*YOURURL*/projects/log/api_upload?key\=\ *LOGGING_UPLOAD_KEY*\ &message=MY LOGGING MESSAGE
 
 
 Run
