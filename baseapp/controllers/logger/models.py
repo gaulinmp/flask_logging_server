@@ -30,7 +30,7 @@ def get_log_level(int_or_string):
     level = logging.DEBUG
     try:  # Make sure 'level' is int
         level = int(int_or_string)
-    except TypeError:  # value error means text (or other)
+    except ValueError:  # value error means text (or other)
         txt = str(int_or_string).lower().strip()
         level = LEVELS.get(txt, level)
     return level
