@@ -71,22 +71,26 @@ def submit_project():
 @blueprint.route("/api_upload", methods=["GET"])
 def api_create():
     form = LogEntryForm(request.args, csrf_enabled=False)
-    #form.project_id.data = request.args.get('project_id', -1)
+    # Workaround to allow native use of HTTPHandler
+    if 'level' not in request.args and 'levelname' in request.args:
+        form.level.data = request.args['levelname']
     if not form.validate():
-        print(form.errors)
         return "{'success':false, 'message':'Invalid supplied data'}", 401
-    upkey = current_app.config['UPLOAD_KEY']
-    print(upkey)
+
+    upkey = current_app.config['LOGGING_UPLOAD_KEY']
     if len(upkey) < 1:
         return "{'success':false, 'message':'Auth config missing.'}", 500
+
     if upkey != request.args.get('key', ''):
         return "{'success':false, 'message':'Not authenticated.'}", 403
+
     l = LogEntry.create(submitter=form.submitter.data,
                         email_to=form.email_to.data,
                         project_id=form.project_id.data,
                         message=form.message.data,
                         level=form.level.data)
-    return "{'success':true}", 200
+
+    return "{'success':true, 'created':{}}".format(l), 200
 
 
 ################################################################################
