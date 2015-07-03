@@ -90,7 +90,7 @@ def api_create():
                         message=form.message.data,
                         level=form.level.data)
 
-    return "{'success':true, 'created':{}}".format(l), 200
+    return "{'success':true}", 200
 
 
 ################################################################################
