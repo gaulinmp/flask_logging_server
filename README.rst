@@ -9,19 +9,19 @@ Quick Start
 ------------
 #) git clone https://github.com/gaulinmp/flask_logging_server.git to your server of choice (I use bluehost)
    
-   #) Let's say you put it at `$HOME/projects/flask_logging_server` for now.
+   #) Let's say you put it at ``$HOME/projects/flask_logging_server`` for now.
 
 #) Put your WSGI run script in a folder somewhere in the ~/public_html folder.
    
-   #) Let's say you put it at `$HOME/public_html/projects/log` for now.
+   #) Let's say you put it at ``$HOME/public_html/projects/log`` for now.
    
-   #) You could copy the example_wsgi.py script: `cp example_wsgi.py $HOME/public_html/projects/log`
+   #) You could copy the ``example_wsgi.py`` script: ``cp example_wsgi.py $HOME/public_html/projects/log``
 
 #) That's it for the server.
 
 #) On any computer, send a GET request to the api_upload URI with the correct secret key
 
-   #) http\:\/\/*YOURURL*/projects/log/api_upload?key\=\ *LOGGING_UPLOAD_KEY*\ &message=MY LOGGING MESSAGE
+   #) ``http://``\ *YOURURL*\ ``/projects/log/api_upload?key=``\ *LOGGING_UPLOAD_KEY*\ ``&message=MY LOGGING MESSAGE``
 
 
 Run
