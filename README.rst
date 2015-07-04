@@ -5,6 +5,7 @@ Flask Logging Server
 Flask website for uploading and displaying logging messages from any web-connected computer.
 Uses simple GET and a 'secret key' to upload.
 
+------------
 Quick Start
 ------------
 #) git clone https://github.com/gaulinmp/flask_logging_server.git to your server of choice (I use bluehost)
@@ -24,17 +25,13 @@ Quick Start
    #) ``http://``\ *YOURURL*\ ``/projects/log/api_upload?key=``\ *LOGGING_UPLOAD_KEY*\ ``&message=MY LOGGING MESSAGE``
 
 
-Run
+Run debug server
 ----------------
-```sh
-$ python run.py
-```
+``$ python run.py``
 
-Shell
+Shell environment
 -----------------
-```sh
-$ python shell.py
-```
+``$ python shell.py``
 
 Screenshot
 -----------------
