@@ -20,8 +20,7 @@ blueprint = Blueprint('baseapp', __name__,
 ####           Routes                                                       ####
 ################################################################################
 
-@blueprint.route("/", methods=["GET"])
-@login_required
+@blueprint.route("/", methods=["GET"]) # @login_required
 def home():
     try:
         pid = int(request.args.get('project', -1))
@@ -31,7 +30,9 @@ def home():
     logs = LogEntry.search(project_id=pid, level=level
                           ).order_by('timestamp desc')[:25]
     projs = LogProject.query.order_by('id desc')
-    return render_template("all_logs.html", logs=logs, projects=projs)
+    numlogs = LogEntry.search(project_id=pid).count()
+    return render_template("all_logs.html", logs=logs, projects=projs,
+                           numlogs=(len(logs), numlogs))
 
 @blueprint.route("/newlog", methods=["GET", "POST"])
 @login_required
@@ -91,6 +92,22 @@ def api_create():
                         level=form.level.data)
 
     return "{'success':true}", 200
+
+
+@blueprint.route("/delete_old", methods=["GET"])
+@login_required
+def delete_old():
+    MIN_KEEP = 25
+    try:
+        pid = int(request.args.get('project', -1))
+    except ValueError:
+        pid = -1
+    logs = LogEntry.search(project_id=pid, level=0
+                          ).order_by('timestamp desc')
+
+    for i in range(logs.count() - MIN_KEEP, 0, -1): # i = COUNT - MIN_KEEP -> 0
+        logs[-1].delete(commit=(i==1)) # Commit on last one (i==1)
+    return redirect(url_for('baseapp.home'))
 
 
 ################################################################################

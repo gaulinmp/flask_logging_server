@@ -1,5 +1,10 @@
 {% extends 'layouts/skeleton.html' %}
-{% block title %}View Logs{% endblock %}
+{% block title %}
+Logs
+{% if numlogs %}
+({{ numlogs[0] |default(0) }}/{{ numlogs[1] |default(0) }})
+{% endif %}
+{% endblock title %}
 {% block head %}
 <script type="text/javascript">
 function mkarg(key, value) {
@@ -27,6 +32,14 @@ function mkarg(key, value) {
           document.location.search = kvp.join('&');
       }
   }
+  {% if current_user.is_authenticated() %}
+  function delete_old() {
+        var kvp = document.location.search;
+        var delurl = "{{ url_for('baseapp.delete_old') }}"+kvp;
+        console.log(delurl);
+        window.location.assign(delurl);
+    }
+  {% endif %}
 </script>
 {% endblock head %}
 
@@ -56,6 +69,9 @@ function mkarg(key, value) {
     <li><a href="{{ url_for('baseapp.submit_project') }}">Project</a></li>
   </ul>
 </li>
+{% if current_user.is_authenticated() %}
+<li><a href="javascript:delete_old()"><span class='text-danger'>Delete Old</span></a></li>
+{% endif %}
 {% endblock header_links_left %}
 
 {% set level_to_class = {'DEBUG': '', 'INFO':'', 'WARNING':'success',
