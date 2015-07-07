@@ -62,6 +62,7 @@ function mkarg(key, value) {
     <li><a href="javascript:mkarg('level','debug')">Debug</a></li>
   </ul>
 </li>
+{% if current_user.is_authenticated() %}
 <li class="dropdown">
   <a class="dropdown-toggle" data-toggle="dropdown">New <b class="caret"></b></a>
   <ul class="dropdown-menu">
@@ -69,7 +70,6 @@ function mkarg(key, value) {
     <li><a href="{{ url_for('baseapp.submit_project') }}">Project</a></li>
   </ul>
 </li>
-{% if current_user.is_authenticated() %}
 <li><a href="javascript:delete_old()"><span class='text-danger'>Delete Old</span></a></li>
 {% endif %}
 {% endblock header_links_left %}
