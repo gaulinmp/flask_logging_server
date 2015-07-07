@@ -83,22 +83,29 @@ function mkarg(key, value) {
   <table class="log-table table table-condensed table-striped table-hover">
     <thead>
       <tr class="entry">
-        <th class='logval project col-md-1'>Project</th>
-        <th class='logval level col-md-1'>Level</th>
-        <th class='logval timestamp col-md-2 col-sm-1 col-xs-1'>Time</th>
-        <th class='logval submitter col-md-1'>From</th>
+        <th class='logval project hidden-xs col-lg-1'>Project</th>
+        <th class='logval level hidden-xs col-lg-1'>Level</th>
+        <th class='logval timestamp hidden-xs col-sm-2'>Time</th>
+        <th class='logval submitter hidden-xs col-lg-1'>From</th>
+        <th class='logval allinfo col-xs-1 visible-xs'>Info</th>
         <th class='logval message'>Log</th>
       </tr>
     </thead>
     <tbody>
       {% for l in logs %}
       <tr class="entry {{ level_to_class[l.level_name] }}">
-        <td class='logval project'>{{ l.project.name }}</td>
-        <td class='logval level'>{{ l.level_name }}</td>
-        <td class='logval timestamp'>
+        <td class='logval project hidden-xs'>{{ l.project.name }}</td>
+        <td class='logval level hidden-xs'>{{ l.level_name }}</td>
+        <td class='logval timestamp hidden-xs'>
           <span class=' hidden-xs'>{{ l.timestamp.strftime('%Y-%m-%d') }}</span>
           {{ l.timestamp.strftime('%H:%M:%S') }}</td>
-        <td class='logval submitter'>{{ l.submitter }}</td>
+        <td class='logval submitter hidden-xs'>{{ l.submitter }}</td>
+        <td class='logval allinfo visible-xs'>
+        {{ l.project.name }}<br>
+        {{ l.level_name }}<br>
+        {{ l.timestamp.strftime('%H:%M:%S') }}<br>
+        {{ l.submitter }}<br>
+        </td>
         <td class='logval message'>{{ l.message }}</td>
       </tr>
       {% endfor %}
