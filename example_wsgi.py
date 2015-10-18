@@ -1,6 +1,9 @@
 #!/home1/USERNAME/python/2.7/bin/python
 # ^^ This is a custom install of python, change it to reflect your server ^^
 
+# put this file in public_html root, like ~/public_html/flask/log
+# below, set APPLICATION_ROOT to this file, including filename (here ``log``)
+
 import os
 import sys
 sys.path.insert(0, '/home1/USERNAME/projects/flask_logging_server/')
@@ -13,7 +16,7 @@ from baseapp import create_app
 
 from config.default_server import ProdConfig as config
 
-config.APPLICATION_ROOT = '/projects/log/' # <-- set this to this file
+config.APPLICATION_ROOT = '/projects/log/' # <-- set this to this file path (see above)
 
 app = create_app(config)
 
