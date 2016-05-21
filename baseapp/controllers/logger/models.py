@@ -56,7 +56,7 @@ class LogEntry(SurrogatePK, Model):
     __tablename__ = 'log_entries'
     project_id = Column(db.ForeignKey("{}.id".format(LogProject.__tablename__)),
                         nullable=False, default=0)
-    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    timestamp = Column(db.DateTime, nullable=False, default=dt.datetime.now)
     submitter = Column(db.String(80), unique=False, nullable=True)
     email_to = Column(db.String(80), unique=False, nullable=True)
     message = Column(db.Text, nullable=True)
